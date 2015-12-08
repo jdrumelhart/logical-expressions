@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 interface LogicalExpression {
 	
 	boolean valid();
@@ -9,4 +11,6 @@ interface LogicalExpression {
 	int entails(LogicalExpression l);
 	
 	int equivalent(LogicalExpression l);
+	
+	ArrayList<Boolean> getTruth();
 }
