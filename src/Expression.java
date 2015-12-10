@@ -1,15 +1,15 @@
 import java.util.ArrayList;
 
 public class Expression implements LogicalExpression {
+	String input;
 	ArrayList<Boolean> truth;
 	ArrayList<Character> characters;
-	int variables;
 	
 	
 	public Expression(String input) {
-		
-		truth = new ArrayList<Boolean>(variables);
-		characters = new ArrayList<Character>(0);
+		this.input = input;
+		characters = LogicalExpression.shunting(this.input);
+		truth = LogicalExpression.evaluate(characters);
 	}
 
 	@Override
@@ -34,5 +34,10 @@ public class Expression implements LogicalExpression {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public String getString() {
+		return null;
 	}
 }

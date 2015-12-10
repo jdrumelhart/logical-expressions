@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 interface LogicalExpression {
 	
 	boolean valid();
@@ -6,8 +8,19 @@ interface LogicalExpression {
 	
 	boolean contingent();
 	
+	String getString();
+	
+	static ArrayList<Character> shunting(String s) {
+		return null;
+	}
+	
+	static ArrayList<Boolean> evaluate(ArrayList<Character> input) {
+		return null;
+	}
+	
 	static int entails(LogicalExpression l1, LogicalExpression l2) {
-		return 1;
+		String s = new String(l1.getString() + l2.getString());
+		return 0;
 	}
 	
 	public static int equivalent(LogicalExpression l1, LogicalExpression l2) {
