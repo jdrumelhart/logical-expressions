@@ -1,3 +1,4 @@
+import java.sql.Array;
 import java.util.ArrayList;
 
 interface LogicalExpression {
@@ -24,7 +25,8 @@ interface LogicalExpression {
 	 * @param polish String in reverse polish notation
 	 * @return an arraylist of booleans that represents the results of the evaluations
 	 */
-	static ArrayList<Boolean> evaluate(String polish) {
+	static ArrayList<Boolean> evaluate(String polish, int variables) {
+		boolean[][] table = truthTable(variables, (int)Math.pow(2, variables));
 		return null;
 	}
 	
@@ -32,8 +34,25 @@ interface LogicalExpression {
 	 * Creates a truth table 
 	 * @param variables number of variable the truth table is for
 	 */
-	static void truthTable(int variables) {
-		boolean[][] table = new boolean[variables][(int) Math.pow(2, variables)];
+	static boolean[][] truthTable(int x, int y) {
+		boolean[][] table = new boolean[x][y];
+		for(int i = 0; i < y; i++) {
+			if(i < ((y)/ 2)) {
+				table[0][i] = true;
+			}
+			else {
+				table[0][i] = false;
+			}
+		}
+		if(y > 1) {
+			boolean[][] temp = truthTable(x,y/2);
+			for(int i = 0; i < y/2; i++) {
+				table[1][i] = temp[0][i];
+				table[1][i + y/2] = temp[0][i];
+			}
+		}
+		
+		return table;
 	}
 	
 	/**
