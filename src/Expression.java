@@ -12,7 +12,7 @@ public class Expression implements LogicalExpression {
 	public Expression(String input) {
 		this.input = input;
 		output = LogicalExpression.shunting(this.input);
-		truth = LogicalExpression.evaluate(output, 0);
+		truth = LogicalExpression.evaluate(output);
 	}
 
 	/**
