@@ -1,18 +1,27 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
 public class Main {
 	public static void main(String[] args) {
+		Scanner input = new Scanner(System.in);
+		System.out.println("Enter a logical expression: ");
+		String a = input.nextLine();
+		Expression s = new Expression(a);
+		System.out.println("Enter a logical expression: ");
+		String b = input.nextLine();
+		Expression z = new Expression(b);
+		System.out.println(z.entails(s));
+		System.out.println(s.entails(z));
+		System.out.println(z.equivalent(s));
 		/*
-		Expression l1 = new Expression("a");
-		Expression l2 = new Expression("b");
-		System.out.println(LogicalExpression.concat(l1,l2).getString());
-		boolean[][] f = LogicalExpression.truthTable(4);
-		for(int i = 0; i < 16; i++) {
-			for(int j = 0; j < 4; j++) {
-				System.out.print(f[i][j] + " ");
-			}
-			System.out.println();
+		String r = "ab|";
+		ArrayList<Boolean> z = LogicalExpression.evaluate(r);
+		for(int i = 0; i < z.size(); i++) {
+			System.out.println(z.get(i));
 		}
+		String t = "(a|b)&c|~d";
+		t = LogicalExpression.shunting(t);
+		System.out.println(t);
 		*/
-		String s = "abcc7";
-		System.out.println(LogicalExpression.numUnique(s));
 	}
 }

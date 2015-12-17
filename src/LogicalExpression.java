@@ -1,8 +1,9 @@
 import java.util.ArrayList;
+import java.util.Stack;
 
 interface LogicalExpression {
 	final String letters = "abcdefghijklmnopqrstuvwxyz";
-	final String operators = "~|&";
+	final String operators = "~&|()";
 	
 	boolean valid();
 	
@@ -17,8 +18,39 @@ interface LogicalExpression {
 	 * @return a string in reverse polish notation
 	 */
 	static String shunting(String s) {
-		
-		return s;
+		s.replaceAll("\\s","");
+		char[] c = s.toCharArray();
+		String output = new String();
+		Stack<Character> opStack = new Stack<Character>();
+		for(int i = 0; i < c.length; i++) {
+			if(letters.indexOf(c[i]) != -1) {
+				output += (c[i]);
+			}
+			else if(operators.indexOf(c[i]) != -1 && operators.indexOf(c[i]) < 3) {
+				while(opStack.size() > 0 && (operators.indexOf(c[i]) >= operators.indexOf(opStack.peek()))) {
+					output += opStack.pop();
+				}
+				opStack.push(c[i]);
+			}
+			else if(operators.indexOf(c[i]) == 3) {
+				opStack.push(c[i]);
+			}
+			else if(operators.indexOf(c[i]) == 4) {
+				while(operators.indexOf(opStack.peek()) != 3) {
+					output += opStack.pop();
+				}
+				if(opStack.size() > 0 && operators.indexOf(opStack.peek()) == 3) {
+					opStack.pop();
+				}
+				else {
+					return null;
+				}
+			}
+		}
+		while(opStack.size() > 0) {
+			output += opStack.pop();
+		}
+		return output;
 	}
 	
 	/**
@@ -31,68 +63,80 @@ interface LogicalExpression {
 		ArrayList<Boolean> truth = new ArrayList<Boolean>(uniques.length());
 		boolean[][] table = truthTable(uniques.length());
 		for(int i = 0; i < Math.pow(2, uniques.length()); i++) {
-			String tempString = new String(polish);
-			for(int j = 0; j < uniques.length(); j++) {
-				String s;
-				if(table[i][j]) {
-					s = new String("T");
-				}
-				else {
-					s = new String("F");
-				}
-				tempString.replaceAll(String.valueOf(uniques.charAt(j)), s);
-			}
-			truth.add(i, simplify(tempString));
+			String s = replace(table, polish, uniques, i);
+			truth.add(i, simplify(s));
 		}
 
 		return truth;
 	}
 	
-	static boolean simplify(String polish) {
-		String polish1 = polish;
-		while(true) {
-			for(int i = 0; i < polish1.length() - 2; i++) {
-				if(polish1.charAt(i) == 'T' || polish1.charAt(i) == 'F') {
-					if(polish1.charAt(i + 1) == 'T' || polish1.charAt(i + 1) == 'F') {
-						if(operators.contains(String.valueOf(polish1.charAt(i + 2)))) {
-							if(polish1.charAt(i + 2) == '|') {
-								if(polish1.charAt(i) == 'F' || polish1.charAt(i+1) == 'F') {
-									polish1 = "F" + polish1.substring(i + 3);
-								}
-								else {
-									polish1 = "T" + polish1.substring(i + 3);
-								}
-							}
-							else {
-								if(polish1.charAt(i) == 'T' && polish1.charAt(i+1) == 'T') {
-									polish1 = "T" + polish1.substring(i + 3);
-								}
-								else {
-									polish1 = "F" + polish1.substring(i + 3);
-								}
-							}
-						}
-					}
-				}
-				else if(polish1.charAt(i + 1) == '~') {
-					if(polish1.charAt(i) == 'T') {
-						polish1 = "F" + polish1.substring(i + 2);
-					}
-					else {
-						polish1 = "T" + polish1.substring(i + 2);
-					}
-				}
+	static String replace(boolean[][] table, String polish, String uniques, int i) {
+		String tempString = new String(polish);
+		for(int j = 0; j < uniques.length(); j++) {
+			String s;
+			if(table[i][j]) {
+				s = new String("T");
 			}
-			if(polish1.length() <= 1) {
-				break;
+			else {
+				s = new String("F");
 			}
+			tempString = tempString.replaceAll(String.valueOf(uniques.charAt(j)), s);
 		}
-		if(polish1 == "T") {
-			return true;
-		}
-		return false; 
+		return tempString;
 	}
 	
+	static Boolean simplify(String s) {
+		Stack<Character> result = new Stack<Character>();
+		char[] c = s.toCharArray();
+		for(int i = 0; i < c.length; i++) {
+			if(c[i] == 'T' || c[i] == 'F') {
+				result.push(c[i]);
+			}
+			else if(c[i] == '~') {
+				result.push(not(result.pop()));
+			}
+			else if(c[i] == '&') {
+				result.push(and(result.pop(), result.pop()));
+			}
+			else if(c[i] == '|') {
+				result.push(or(result.pop(), result.pop()));
+			}
+		}
+		if(result.size() > 1) {
+			return null;
+		}
+		else {
+			if(result.pop() == 'T') {
+				return true;
+			}
+			return false;
+		}
+	}
+	
+	static Character not(Character pop) {
+		if(pop == 'T') {
+			return 'F';
+		}
+		else if(pop == 'F') {
+			return 'T';
+		}
+		return null;
+	}
+	
+	static Character and(Character p1, Character p2) {
+		if(p1 == 'T' && p2 == 'T') {
+			return 'T';
+		}
+		return 'F';
+	}
+	
+	static Character or(Character p1, Character p2) {
+		if(p1 == 'F' && p2 == 'F') {
+			return 'F';
+		}
+		return 'T';
+	}
+
 	static String numUnique(String polish) {
 		String letter1 = new String();
 		String letter2 = new String(letters);
